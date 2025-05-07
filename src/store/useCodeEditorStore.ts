@@ -7,13 +7,13 @@ import { LANGUAGE_CONFIG } from "@/app/(root)/_constants";
 const getInitialState = () => {
   if (typeof window === "undefined") {
     return {
-      language: "javascript",
+      language: "java",
       fontSize: 16,
       theme: "vs-dark",
     };
   }
   
-  const savedLanguage = localStorage.getItem("editor-Language") || "javascript";
+  const savedLanguage = localStorage.getItem("editor-Language") || "java";
   const savedTheme = localStorage.getItem("editor-Theme") || "vs-dark";
   const savedFontSize = localStorage.getItem("editor-font-size") || "16";
 

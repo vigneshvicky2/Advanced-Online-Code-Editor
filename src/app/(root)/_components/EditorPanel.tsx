@@ -16,7 +16,7 @@ function EditorPanel() {
   const clerk = useClerk();
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const { language, theme, fontSize, editor, setFontSize, setEditor } = useCodeEditorStore();
-
+  // console.log(clerk);
   const mounted = useMounted();
 
   useEffect(() => {

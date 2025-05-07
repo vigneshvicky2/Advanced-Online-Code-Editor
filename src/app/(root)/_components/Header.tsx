@@ -78,7 +78,7 @@ async function Header() {
             <ThemeSelector />
             <LanguageSelector hasAccess={Boolean(convexUser?.isPro)} />
           </div>
-
+          <SignedIn >
           {!convexUser?.isPro && (
             <Link
               href="/pricing"
@@ -92,10 +92,11 @@ async function Header() {
               </span>
             </Link>
           )}
-
-          <SignedIn >
-            <RunButton />
-          </SignedIn>
+        </SignedIn>
+          {/* <SignedIn >
+            
+          </SignedIn> */}
+          <RunButton />
 
           <div className="pl-3 border-l border-gray-800">
             <HeaderProfileBtn />
