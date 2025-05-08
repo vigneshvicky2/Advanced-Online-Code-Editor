@@ -30,6 +30,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
     <html lang="en">
+    <head>
+    <meta name="google-site-verification" content="UXSv8MNvW1l6JZqud5wk9TeSRmplUkTta9xzmF28tik" />
+    </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gradient-to-b from-gray-900 to-gray-950 text-gray-100 flex flex-col`}
       >
