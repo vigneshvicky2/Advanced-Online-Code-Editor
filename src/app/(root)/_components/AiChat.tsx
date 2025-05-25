@@ -1,6 +1,6 @@
 import { Brain} from 'lucide-react';
 import React, { useState } from 'react';
-import GemChat from './Gemchat';
+import GemChat from './GemChat';
 
 const AiChat = () => {
   const [isOpen, setIsOpen] = useState(false);
