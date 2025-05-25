@@ -3,6 +3,7 @@ import { useCodeEditorStore } from '@/store/useCodeEditorStore'
 import { AlertTriangle, CheckCircle, Clock, Copy, Terminal } from 'lucide-react';
 import React, { useState } from 'react'
 import RunningCodeSkeleton from './RunningCodeSkeleton';
+import AiChat from './AiChat';
 
 function OutputPanel() {
   const {output,error,isRunning} = useCodeEditorStore();
@@ -49,8 +50,9 @@ function OutputPanel() {
           )}
         </button>
       )}
+      <AiChat/>
     </div>
-
+      
     {/* Output Area */}
     <div className="relative">
       <div

@@ -6,7 +6,7 @@ import { Download} from 'lucide-react';
 import React from 'react'
 
 function DownloadButton() {
-  const {  language , getCode } = useCodeEditorStore();
+  const {  isRunning,language , getCode } = useCodeEditorStore();
   const { input } = useCodeEditorStore();
   const handleDownload = () => {
     const code = getCode();
@@ -91,6 +91,7 @@ function DownloadButton() {
   return (
     <motion.button
       onClick={handleDownload}
+      disabled={isRunning}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={`
