@@ -14,6 +14,20 @@ type LanguageConfig = Record<
 >;
 
 export const LANGUAGE_CONFIG : LanguageConfig = {
+  c:{
+    id:"c",
+    label: "C",
+    logoPath: "/C.png",
+    pistonRuntime: { language: "c", version: "10.2.0" },
+    monacoLanguage: "c",
+    defaultCode: `#include <stdio.h>
+
+int main() {
+    printf("Hello Vignesh!");
+    return 0;
+}
+    `
+  },
   javascript: {
     id: "javascript",
     label: "JavaScript",
@@ -116,6 +130,15 @@ class Program {
     pistonRuntime: { language: "swift", version: "5.3.3" },
     monacoLanguage: "swift",
     defaultCode: `print("Hello Vignesh!")`,
+  },
+  sql:{
+    id:"sql",
+    label: "sql",
+    logoPath: "/sql.png",
+    pistonRuntime: { language: "sql", version: "3.36.0" },
+    monacoLanguage: "sql",
+    defaultCode: `SELECT "Hello Vignesh!";
+    `
   }
 };
 
