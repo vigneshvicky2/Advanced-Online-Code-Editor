@@ -15,8 +15,20 @@ function GemChat({ onClose }: { onClose: () => void }) {
 
   // Scroll to bottom when chat history changes
   useEffect(() => {
+    // Scroll to bottom
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  
+    // Disable background scroll safely
+    if (typeof window !== "undefined" && document?.body) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+  
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
   }, [history]);
+  
 
   const handleSend = async () => {
     if (!input.trim()) return; // Ignore empty input
