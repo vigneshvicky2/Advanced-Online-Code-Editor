@@ -223,6 +223,7 @@ export const THEME_DEFINITONS = {
       "editor.selectionHighlightBackground": "#073642",
     },
   },
+  
 };
 
 // Helper function to define themes in Monaco
