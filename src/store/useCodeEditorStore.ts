@@ -1,5 +1,4 @@
 import { create } from "zustand";
-// import { LANGUAGE_CONFIG } from "@/app/(root)/_constants";
 import { CodeEditorState } from "@/types";
 import { Monaco } from "@monaco-editor/react";
 import { LANGUAGE_CONFIG } from "@/app/(root)/_constants";
@@ -12,7 +11,7 @@ const getInitialState = () => {
       theme: "vs-dark",
     };
   }
-  
+
   const savedLanguage = localStorage.getItem("editor-Language") || "java";
   const savedTheme = localStorage.getItem("editor-Theme") || "vs-dark";
   const savedFontSize = localStorage.getItem("editor-font-size") || "16";
@@ -23,7 +22,6 @@ const getInitialState = () => {
     theme: savedTheme,
   };
 };
-
 
 export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
   const initialState = getInitialState();
@@ -36,6 +34,7 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
     editor: null,
     executionResult: null,
     input: "",
+
     setInput: (input: string) => set({ input }),
 
     getCode: () => {
@@ -74,23 +73,22 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
     },
 
     runCode: async () => {
-      const { language, getCode, input } = get(); // ✅ include input
-
+      const { language, getCode, input } = get();
       const code = getCode();
-      if (!code) {
-        set({ error: "Please enter some code" });
+
+      if (!code.trim()) {
+        set({ error: "⚠️ Please enter some code before running." });
         return;
       }
-    
-      set({ isRunning: true, error: null, output: "" });
-    
-      try {
-        const runtime = LANGUAGE_CONFIG[language].pistonRuntime;
+
+      set({ isRunning: true, error: null, output: "", executionResult: null });
+
+      const runtime = LANGUAGE_CONFIG[language].pistonRuntime;
+
+      const makeRequest = async () => {
         const response = await fetch("https://emkc.org/api/v2/piston/execute", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             language: runtime.language,
             version: runtime.version,
@@ -100,47 +98,85 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
                 content: code,
               },
             ],
-            stdin: input,
+            stdin: input || "",
           }),
         });
-    
-        const data = await response.json();
-        console.log(data);
-    
-        if (data.message) {
-          set({ error: data.message, executionResult: { code, output: "", error: data.message } });
-          return;
+
+        if (!response.ok) throw new Error("❌ Piston API server error.");
+        return response.json();
+      };
+
+      let data;
+      let attempts = 0;
+      const maxRetries = 2;
+
+      while (attempts < maxRetries) {
+        try {
+          data = await makeRequest();
+          break;
+        } catch (e) {
+          console.warn(`Retry attempt ${attempts + 1}:`, e);
+          attempts++;
+          if (attempts === maxRetries) {
+            set({
+              error: "🚨 Failed to run code after multiple attempts.",
+              executionResult: { code, output: "", error: "Retry limit exceeded." },
+              isRunning: false,
+            });
+            return;
+          }
         }
-    
-        if (data.compile && data.compile.code !== 0) {
-          const error = data.compile.stderr || data.compile.output;
-          set({ error, executionResult: { code, output: "", error } });
-          return;
-        }
-    
-        if (data.run && data.run.code !== 0) {
-          const error = data.run.stderr || data.run.output;
-          set({ error, executionResult: { code, output: "", error } });
-          return;
-        }
-    
-        const output = data.run.output;
-        set({
-          output: output.trim(),
-          error: null,
-          executionResult: { code, output: output.trim(), error: null },
-        });
-      } catch (error) {
-        console.error(error);
-        set({
-          error: "Error running code",
-          executionResult: { code, output: "", error: "Error running code" },
-        });
-      } finally {
-        set({ isRunning: false });
       }
+
+      console.log("Piston API Response:", data);
+
+      if (data.message) {
+        set({
+          error: `⚠️ API Error: ${data.message}`,
+          executionResult: { code, output: "", error: data.message },
+          isRunning: false,
+        });
+        return;
+      }
+
+      if (data.compile?.code !== undefined && data.compile.code !== 0) {
+        const error = data.compile?.stderr || data.compile?.output || "Compilation failed.";
+        set({
+          error: `\n${error}`,
+          executionResult: { code, output: "", error },
+        });
+        return;
+      }
+      
+
+      if (data.run?.code !== 0) {
+        const error = data.run.stderr || data.run.output || "Runtime error.";
+        set({
+          error: `\n${error}`,
+          executionResult: { code, output: "", error },
+          isRunning: false,
+        });
+        return;
+      }
+
+      let output = data.run.output?.trim();
+      if (!output) {
+        output = "[✅ Code ran successfully but produced no output]";
+      }
+
+      // const metadata = `\n\n🧠 Execution Info:\n⏱ Time: ${data.run.time}s\n💾 Memory: ${data.run.memory} KB`;
+
+      set({
+        output: output ,
+        error: null,
+        executionResult: {
+          code,
+          output: output,
+          error: null,
+        },
+        isRunning: false,
+      });
     },
-    
   };
 });
 
