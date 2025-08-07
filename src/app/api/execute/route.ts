@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       );
       result = await resStatus.json();
       status = result.status || 'running';
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // 1s wait
+      await new Promise((resolve) => setTimeout(resolve, 0)); 
     }
 
     return NextResponse.json({
