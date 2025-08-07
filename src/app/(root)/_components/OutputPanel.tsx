@@ -1,23 +1,23 @@
 "use client"
 import { useCodeEditorStore } from '@/store/useCodeEditorStore'
-import { AlertTriangle, CheckCircle, Clock, Copy, Terminal } from 'lucide-react';
-import React, { useState } from 'react'
+import { AlertTriangle, CheckCircle, Clock, Terminal } from 'lucide-react';
+// import React, { useState } from 'react'
 import RunningCodeSkeleton from './RunningCodeSkeleton';
 import AiChat from './AiChat';
 
 function OutputPanel() {
   const {output,error,isRunning} = useCodeEditorStore();
-  const[isCopied,setIsCopied] = useState(false);
+  // const[isCopied,setIsCopied] = useState(false);/
 
-  const hasContent = error || output
-  const handleCopy = async () => {
-    if(!hasContent) return;
-    await navigator.clipboard.writeText(error||output);
-    setIsCopied(true);
-    setTimeout(() => {
-      setIsCopied(false);
-    }, 2000);
-  }
+  // const hasContent = error || output
+  // const handleCopy = async () => {
+  //   if(!hasContent) return;
+  //   await navigator.clipboard.writeText(error||output);
+  //   setIsCopied(true);
+  //   setTimeout(() => {
+  //     setIsCopied(false);
+  //   }, 2000);
+  // }
 
 
   return (
@@ -31,7 +31,7 @@ function OutputPanel() {
         <span className="text-sm font-medium text-gray-300">Output</span>
       </div>
 
-      {hasContent && (
+      {/* {hasContent && (
         <button
           onClick={handleCopy}
           className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-gray-400 hover:text-gray-300 bg-[#1e1e2e] 
@@ -49,7 +49,7 @@ function OutputPanel() {
             </>
           )}
         </button>
-      )}
+      )} */}
       <AiChat/>
     </div>
       

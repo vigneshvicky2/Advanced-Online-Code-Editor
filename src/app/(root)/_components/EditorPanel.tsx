@@ -35,6 +35,7 @@ function EditorPanel() {
     if (editor) editor.setValue(defaultCode);
     localStorage.removeItem(`editor-code-${language}`);
   };
+  
 
   const handleEditorChange = (value: string | undefined) => {
     if (value) localStorage.setItem(`editor-code-${language}`, value);
@@ -106,7 +107,7 @@ function EditorPanel() {
         </div>
         
         {/* Editor  */}
-        <div className="relative group rounded-xl overflow-hidden ring-1 ring-white/[0.05]">
+        <div className="relative group rounded-xl overflow-hidden ring-1 ring-white/[0.05] ">
           {clerk.loaded && (
             <Editor
               height="600px"
