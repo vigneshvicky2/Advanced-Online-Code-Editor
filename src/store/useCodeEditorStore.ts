@@ -105,12 +105,12 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
         let output = "";
         let errorMessage = "";
     
-        if (data.build_stderr?.trim()) {
-          errorMessage = data.build_stderr.trim();
-        } else if (data.stderr?.trim()) {
-          errorMessage = data.stderr.trim();
-        } else if (data.output?.trim()) {
-          output = data.output.trim();
+        if (data.build_stderr) {
+          errorMessage = data.build_stderr;
+        } else if (data.stderr) {
+          errorMessage = data.stderr;
+        } else if (data.output) {
+          output = data.output;
         } else {
           output = "[✅ Code ran successfully but produced no output]";
         }
