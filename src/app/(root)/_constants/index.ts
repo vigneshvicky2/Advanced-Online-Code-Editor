@@ -8,31 +8,56 @@ type LanguageConfig = Record<
     label: string;
     logoPath: string;
     pistonRuntime: { language: string; version: string };
+    paizaLanguage: string;
     monacoLanguage: string;
     defaultCode: string;
   }
 >;
 
-export const LANGUAGE_CONFIG : LanguageConfig = {
-  c:{
-    id:"c",
+
+export const LANGUAGE_CONFIG: LanguageConfig = {
+  c: {
+    id: "c",
     label: "C",
     logoPath: "/C.png",
     pistonRuntime: { language: "c", version: "10.2.0" },
+    paizaLanguage: "c",
     monacoLanguage: "c",
-    defaultCode: `#include <stdio.h>
-
-int main() {
-    printf("Hello Vignesh!");
-    return 0;
-}
-    `
+    defaultCode: `#include <stdio.h>\n\nint main() {\n    printf("Hello Vignesh!");\n    return 0;\n}`,
+  },
+  cpp: {
+    id: "cpp",
+    label: "C++",
+    logoPath: "/cpp.png",
+    pistonRuntime: { language: "cpp", version: "10.2.0" },
+    paizaLanguage: "cpp",
+    monacoLanguage: "cpp",
+    defaultCode: `#include <iostream>\n\nint main() {\n    std::cout << "Hello Vignesh!" << std::endl;\n    return 0;\n}`,
+  },
+  java: {
+    id: "java",
+    label: "Java",
+    logoPath: "/java.png",
+    pistonRuntime: { language: "java", version: "15.0.2" },
+    paizaLanguage: "java",
+    monacoLanguage: "java",
+    defaultCode: `public class Main {\n  public static void main(String[] args) {\n      System.out.println("Hello Vignesh!");\n  }\n}`,
+  },
+  python: {
+    id: "python",
+    label: "Python",
+    logoPath: "/python.png",
+    pistonRuntime: { language: "python", version: "3.10.0" },
+    paizaLanguage: "python3",
+    monacoLanguage: "python",
+    defaultCode: `print("Hello Vignesh!")`,
   },
   javascript: {
     id: "javascript",
     label: "JavaScript",
     logoPath: "/javascript.png",
     pistonRuntime: { language: "javascript", version: "18.15.0" },
+    paizaLanguage: "javascript",
     monacoLanguage: "javascript",
     defaultCode: `console.log("Hello Vignesh!");`,
   },
@@ -41,85 +66,43 @@ int main() {
     label: "TypeScript",
     logoPath: "/typescript.png",
     pistonRuntime: { language: "typescript", version: "5.0.3" },
+    paizaLanguage: "typescript", // ⚠️ Paiza might not support TypeScript directly
     monacoLanguage: "typescript",
     defaultCode: `console.log("Hello Vignesh!");`,
-  },
-  python: {
-    id: "python",
-    label: "Python",
-    logoPath: "/python.png",
-    pistonRuntime: { language: "python", version: "3.10.0" },
-    monacoLanguage: "python",
-    defaultCode: `print("Hello Vignesh!")`,
-  },
-  java: {
-    id: "java",
-    label: "Java",
-    logoPath: "/java.png",
-    pistonRuntime: { language: "java", version: "15.0.2" },
-    monacoLanguage: "java",
-    defaultCode: `public class Main {
-  public static void main(String[] args) {
-      System.out.println("Hello Vignesh!");
-  }
-}`,
   },
   go: {
     id: "go",
     label: "Go",
     logoPath: "/go.png",
     pistonRuntime: { language: "go", version: "1.16.2" },
+    paizaLanguage: "go",
     monacoLanguage: "go",
-    defaultCode: `package main
-
-import "fmt"
-
-func main() {
-    fmt.Println("Hello Vignesh!")
-}`,
+    defaultCode: `package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello Vignesh!")\n}`,
   },
   rust: {
     id: "rust",
     label: "Rust",
     logoPath: "/rust.png",
     pistonRuntime: { language: "rust", version: "1.68.2" },
+    paizaLanguage: "rust",
     monacoLanguage: "rust",
-    defaultCode: `fn main() {
-    println!("Hello Vignesh!");
-}`,
-  },
-  cpp: {
-    id: "cpp",
-    label: "C++",
-    logoPath: "/cpp.png",
-    pistonRuntime: { language: "cpp", version: "10.2.0" },
-    monacoLanguage: "cpp",
-    defaultCode: `#include <iostream>
-
-int main() {
-    std::cout << "Hello Vignesh!" << std::endl;
-    return 0;
-}`,
+    defaultCode: `fn main() {\n    println!("Hello Vignesh!");\n}`,
   },
   csharp: {
     id: "csharp",
     label: "C#",
     logoPath: "/csharp.png",
     pistonRuntime: { language: "csharp", version: "6.12.0" },
+    paizaLanguage: "csharp",
     monacoLanguage: "csharp",
-    defaultCode: `using System;
-
-class Program {
-    static void Main() {
-        Console.WriteLine("Hello Vignesh!");
-    }
-}`,
+    defaultCode: `using System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello Vignesh!");\n    }\n}`,
   },
   ruby: {
     id: "ruby",
     label: "Ruby",
     logoPath: "/ruby.png",
     pistonRuntime: { language: "ruby", version: "3.0.1" },
+    paizaLanguage: "ruby",
     monacoLanguage: "ruby",
     defaultCode: `puts "Hello Vignesh!"`,
   },
@@ -128,20 +111,20 @@ class Program {
     label: "Swift",
     logoPath: "/swift.png",
     pistonRuntime: { language: "swift", version: "5.3.3" },
+    paizaLanguage: "swift",
     monacoLanguage: "swift",
     defaultCode: `print("Hello Vignesh!")`,
   },
-  sql:{
-    id:"sql",
-    label: "sql",
+  sql: {
+    id: "sql",
+    label: "SQL",
     logoPath: "/sql.png",
     pistonRuntime: { language: "sql", version: "3.36.0" },
+    paizaLanguage: "mysql", // ✅ Paiza supports `mysql` or `sqlite` – pick what you support
     monacoLanguage: "sql",
-    defaultCode: `SELECT "Hello Vignesh!";
-    `
-  }
+    defaultCode: `SELECT "Hello Vignesh!";`,
+  },
 };
-
 export const THEMES: Theme[] = [
   { id: "vs-dark", label: "VS Dark", color: "#1e1e1e" },
   { id: "vs-light", label: "VS Light", color: "#ffffff" },
