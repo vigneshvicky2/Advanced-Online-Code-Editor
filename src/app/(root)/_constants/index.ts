@@ -115,15 +115,6 @@ export const LANGUAGE_CONFIG: LanguageConfig = {
     monacoLanguage: "swift",
     defaultCode: `print("Hello Vignesh!")`,
   },
-  sql: {
-    id: "sql",
-    label: "SQL",
-    logoPath: "/sql.png",
-    pistonRuntime: { language: "sql", version: "3.36.0" },
-    paizaLanguage: "mysql", // ✅ Paiza supports `mysql` or `sqlite` – pick what you support
-    monacoLanguage: "sql",
-    defaultCode: `SELECT "Hello Vignesh!";`,
-  },
 };
 export const THEMES: Theme[] = [
   { id: "vs-dark", label: "VS Dark", color: "#1e1e1e" },
