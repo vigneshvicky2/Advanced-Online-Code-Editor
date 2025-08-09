@@ -1,43 +1,100 @@
 "use client";
+
 import { useCodeEditorStore } from "@/store/useCodeEditorStore";
 import { useEffect, useState } from "react";
 import { defineMonacoThemes, LANGUAGE_CONFIG } from "../_constants";
 import { Editor } from "@monaco-editor/react";
-import {  motion } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { RotateCcwIcon, ShareIcon, TypeIcon } from "lucide-react";
 import { useClerk } from "@clerk/nextjs";
 import { EditorPanelSkeleton } from "./EditorPanelSkeleton";
 import useMounted from "@/hooks/useMounted";
 import ShareSnippetDialog from "./ShareSnippetDialog";
-// import ShareSnippetDialog from "./ShareSnippetDialog";
 
 function EditorPanel() {
   const clerk = useClerk();
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const { language, theme, fontSize, editor, setFontSize, setEditor } = useCodeEditorStore();
-  // console.log(clerk);
   const mounted = useMounted();
 
+  // Load saved code
   useEffect(() => {
     const savedCode = localStorage.getItem(`editor-code-${language}`);
     const newCode = savedCode || LANGUAGE_CONFIG[language].defaultCode;
     if (editor) editor.setValue(newCode);
   }, [language, editor]);
 
+  // Load saved font size
   useEffect(() => {
     const savedFontSize = localStorage.getItem("editor-font-size");
     if (savedFontSize) setFontSize(parseInt(savedFontSize));
   }, [setFontSize]);
+
+  // Scroll chaining effect
+  useEffect(() => {
+    if (!editor) return;
+
+    const node = editor.getDomNode();
+    if (!node) return;
+
+    const scrollable = node.querySelector(".monaco-scrollable-element") as HTMLElement | null;
+    if (!scrollable) return;
+
+    const atEdges = () => {
+      const top = editor.getScrollTop();
+      const viewH = editor.getLayoutInfo().height;
+      const scrollH = editor.getScrollHeight();
+      return {
+        atTop: top <= 0,
+        atBottom: top + viewH >= scrollH - 1,
+      };
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      const { atTop, atBottom } = atEdges();
+      const goingDown = e.deltaY > 0;
+      const goingUp = e.deltaY < 0;
+
+      if ((atBottom && goingDown) || (atTop && goingUp)) {
+        e.preventDefault();
+        window.scrollBy({ top: e.deltaY, behavior: "auto" });
+      }
+    };
+
+    let touchStartY = 0;
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0]?.clientY ?? 0;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      const currentY = e.touches[0]?.clientY ?? 0;
+      const dy = touchStartY - currentY;
+      const { atTop, atBottom } = atEdges();
+
+      if ((atBottom && dy > 0) || (atTop && dy < 0)) {
+        e.preventDefault();
+        window.scrollBy({ top: dy, behavior: "smooth" });
+      }
+    };
+
+    scrollable.addEventListener("wheel", onWheel, { passive: false });
+    scrollable.addEventListener("touchstart", onTouchStart, { passive: true });
+    scrollable.addEventListener("touchmove", onTouchMove, { passive: false });
+
+    return () => {
+      scrollable.removeEventListener("wheel", onWheel);
+      scrollable.removeEventListener("touchstart", onTouchStart);
+      scrollable.removeEventListener("touchmove", onTouchMove);
+    };
+  }, [editor]);
 
   const handleRefresh = () => {
     const defaultCode = LANGUAGE_CONFIG[language].defaultCode;
     if (editor) editor.setValue(defaultCode);
     localStorage.removeItem(`editor-code-${language}`);
   };
-  
 
-  const handleEditorChange = (value: string | undefined) => {
+  const handleEditorChange = (value?: string) => {
     if (value) localStorage.setItem(`editor-code-${language}`, value);
   };
 
@@ -56,7 +113,7 @@ function EditorPanel() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#1e1e2e] ring-1 ring-white/5">
-              <Image src={"/" + language + ".png"} alt="Logo" width={24} height={24} />
+              <Image src={`/${language}.png`} alt="Logo" width={24} height={24} />
             </div>
             <div>
               <h2 className="text-sm font-medium text-white">Code Editor</h2>
@@ -82,6 +139,7 @@ function EditorPanel() {
               </div>
             </div>
 
+            {/* Reset Button */}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
@@ -101,13 +159,13 @@ function EditorPanel() {
                from-blue-500 to-blue-600 opacity-90 hover:opacity-100 transition-opacity"
             >
               <ShareIcon className="size-4 text-white" />
-              <span className="text-sm font-medium text-white ">Share</span>
+              <span className="text-sm font-medium text-white">Share</span>
             </motion.button>
           </div>
         </div>
-        
-        {/* Editor  */}
-        <div className="relative group rounded-xl overflow-hidden ring-1 ring-white/[0.05] ">
+
+        {/* Editor */}
+        <div className="relative group rounded-xl overflow-hidden ring-1 ring-white/[0.05]">
           {clerk.loaded && (
             <Editor
               height="600px"
@@ -139,12 +197,13 @@ function EditorPanel() {
               }}
             />
           )}
-
-    {!clerk.loaded && <EditorPanelSkeleton />}
+          {!clerk.loaded && <EditorPanelSkeleton />}
         </div>
       </div>
+
       {isShareDialogOpen && <ShareSnippetDialog onClose={() => setIsShareDialogOpen(false)} />}
     </div>
   );
 }
+
 export default EditorPanel;
