@@ -44,7 +44,7 @@ export const LANGUAGE_CONFIG: LanguageConfig = {
     defaultCode: `public class Main {\n  public static void main(String[] args) {\n      System.out.println("Hello Vignesh!");\n  }\n}`,
   },
   python: {
-    id: "python",
+    id: "python3",
     label: "Python",
     logoPath: "/python.png",
     pistonRuntime: { language: "python", version: "3.10.0" },
