@@ -49,7 +49,7 @@ export const LANGUAGE_CONFIG: LanguageConfig = {
     logoPath: "/python.png",
     pistonRuntime: { language: "python", version: "3.10.0" },
     paizaLanguage: "python3",
-    monacoLanguage: "python",
+    monacoLanguage: "python3",
     defaultCode: `print("Hello Vignesh!")`,
   },
   javascript: {
