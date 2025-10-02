@@ -44,12 +44,12 @@ export const LANGUAGE_CONFIG: LanguageConfig = {
     defaultCode: `public class Main {\n  public static void main(String[] args) {\n      System.out.println("Hello Vignesh!");\n  }\n}`,
   },
   python: {
-    id: "python3",
-    label: "Python3",
+    id: "python",
+    label: "Python",
     logoPath: "/python.png",
     pistonRuntime: { language: "python", version: "3.10.0" },
     paizaLanguage: "python3",
-    monacoLanguage: "python3",
+    monacoLanguage: "python",
     defaultCode: `print("Hello Vignesh!")`,
   },
   javascript: {
