@@ -45,7 +45,7 @@ export const LANGUAGE_CONFIG: LanguageConfig = {
   },
   python: {
     id: "python3",
-    label: "Python",
+    label: "Python3",
     logoPath: "/python.png",
     pistonRuntime: { language: "python", version: "3.10.0" },
     paizaLanguage: "python3",
