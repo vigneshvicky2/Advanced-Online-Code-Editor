@@ -30,72 +30,77 @@ function GemChat({ onClose }: { onClose: () => void }) {
   }, [history]);
   
 
-  const handleSend = async () => {
-    if (!input.trim()) return; // Ignore empty input
+   const handleSend = async () => {
+  if (!input.trim()) return;
 
-    const userMessage: Message = {
-      role: "user",
-      text: input,
-    };
-
-    // Add user's message to history and clear input box
-    setHistory((prev) => [...prev, userMessage]);
-    setInput("");
-
-    // Use startTransition for async state update (React 18)
-    startTransition(async () => {
-      try {
-        const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string;
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [// System prompt (acts as AI instructions)
-                {
-                  role: "model", // or "user" if Gemini doesn't support "system"
-                  parts: [{ 
-                    text: " Youre name is **CodePhoenix**,You are working in code craft platform, a helpful coding assistant. " +
-                          "Respond in a friendly, concise, and technical manner. " +
-                          "Always format code snippets in markdown."
-                  }]
-                },
-                // User message
-                {
-                  role: "user",
-                  parts: [{ text: userMessage.text }]
-                }],
-            }),
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data = await response.json();
-
-        // Get model's response text or fallback message
-        const modelResponse: Message = {
-          role: "model",
-          text:
-            data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-            "Sorry, no response from Gemini.",
-        };
-
-        // Add model's response to history
-        setHistory((prev) => [...prev, modelResponse]);
-      } catch (error) {
-        console.error("Error calling Gemini API:", error);
-        setHistory((prev) => [
-          ...prev,
-          { role: "model", text: "Oops, something went wrong. Please try again." },
-        ]);
-      }
-    });
+  const userMessage: Message = {
+    role: "user",
+    text: input,
   };
 
+  setHistory((prev) => [...prev, userMessage]);
+  setInput("");
+
+  startTransition(async () => {
+    try {
+      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string;
+
+      // Convert full history to Gemini-compatible "contents"
+      const chatHistory = [
+        {
+          role: "model",
+          parts: [
+            {
+              text:
+                "You are **CodePhoenix**, working in the Code Craft platform — a helpful, friendly, and technical coding assistant. " +
+                "Always respond concisely and use markdown for code.",
+            },
+          ],
+        },
+        // Map previous messages
+        ...history.map((msg) => ({
+          role: msg.role,
+          parts: [{ text: msg.text }],
+        })),
+        // Include current user message
+        {
+          role: "user",
+          parts: [{ text: userMessage.text }],
+        },
+      ];
+
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: chatHistory }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+
+      const modelResponse: Message = {
+        role: "model",
+        text:
+          data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+          "Sorry, no response from Gemini.",
+      };
+
+      setHistory((prev) => [...prev, modelResponse]);
+    } catch (error) {
+      console.error("Error calling Gemini API:", error);
+      setHistory((prev) => [
+        ...prev,
+        { role: "model", text: "Oops, something went wrong. Please try again." },
+      ]);
+    }
+  });
+};
   // Send message on Enter (without Shift)
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
